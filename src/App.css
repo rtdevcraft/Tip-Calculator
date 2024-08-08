@@ -1,42 +1,247 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0;
+}
+
+header {
+  position: absolute;
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+main {
+  background: #fff;
+  border-radius: 30px;
   padding: 2rem;
-  text-align: center;
+  box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.inputs-container,
+.outputs-container {
+  margin: 1em 1em 0 1em;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+h2 {
+  color: #5e7a7d;
+  font-size: 1rem;
+  margin: 1em 0 0.3em 0;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-w-icon {
+  position: relative;
+}
+
+.input-w-icon input {
+  padding-right: 2.5rem;
+  width: 100%;
+  text-align: right;
+  font-family: 'Space Mono', sans-serif;
+  color: #00474b;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.input-w-icon input::placeholder {
+  text-align: right;
+  color: #00474b;
+  font-weight: 600;
+  font-family: 'Space Mono', sans-serif;
+}
+
+/* Ensure the placeholder alignment is consistent across browsers */
+.input-w-icon input:-moz-placeholder,
+.input-w-icon input::-moz-placeholder,
+.input-w-icon input:-ms-input-placeholder,
+.input-w-icon input::-webkit-input-placeholder {
+  text-align: right;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  width: 10px;
+  pointer-events: none;
+}
+
+input {
+  width: 100%;
+  background-color: #f3f9fa;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: 2px solid #26c2ae;
+}
+
+.tip-buttons-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.custom-tip-input {
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #00474b;
+  background-color: #f3f9fa;
+  border: none;
+  border-radius: 5px;
+  text-align: right;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.custom-tip-input::placeholder {
+  color: #547878;
+  font-family: 'Space Mono', sans-serif;
+}
+
+.custom-tip-input:focus {
+  outline: 2px solid #26c2ae;
+}
+
+.label-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.error-message {
+  color: #e17052;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.input-w-icon.error input {
+  border: 2px solid #e17052;
+}
+
+.input-w-icon.error input:focus {
+  outline: none;
+  border-color: #e17052;
+}
+
+button {
+  background-color: #00474b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-family: 'Space Mono', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #26c0ab;
+}
+
+button.selected {
+  background-color: #26c0ab;
+  color: #00494d;
+}
+
+.outputs-container {
+  margin-top: 2em;
+  background-color: #00474b;
+  color: #fff;
+  padding: 1.5rem;
+  border-radius: 15px;
+}
+
+.output {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.outputs-container h2 {
+  color: #fff;
+}
+
+.per-person {
+  display: block;
+  color: #5e7a7d;
+}
+
+.amount {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #26c2ae;
+}
+
+.reset {
+  width: 100%;
+  background-color: #26c2ae;
+  color: #00494d;
+  text-transform: uppercase;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.reset:hover {
+  background-color: #9fe8df;
+}
+
+@media screen and (min-width: 768px) {
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  to {
-    transform: rotate(360deg);
+
+  .inputs-container,
+  .outputs-container {
+    width: 50%;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .outputs-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+    height: 400px;
   }
-}
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  .reset {
+    align-self: flex-end;
+  }
 }
