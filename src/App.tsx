@@ -14,18 +14,36 @@ const App: React.FC = () => {
   const [isZeroPeople, setIsZeroPeople] = useState<boolean>(false);
 
   const billInputRef = useRef<HTMLInputElement>(null);
+  const customTipInputRef = useRef<HTMLInputElement>(null);
   const peopleInputRef = useRef<HTMLInputElement>(null);
-  const customTipInputRef = useRef<HTMLInputElement>(null); // Add this line
 
   useEffect(() => {
-    if (billInputRef.current && 'inputMode' in billInputRef.current) {
-      billInputRef.current.inputMode = 'decimal';
-    }
-    if (peopleInputRef.current && 'inputMode' in peopleInputRef.current) {
-      peopleInputRef.current.inputMode = 'numeric';
-    }
-    if (customTipInputRef.current && 'inputMode' in customTipInputRef.current) {
-      customTipInputRef.current.inputMode = 'decimal';
+    const supportsInputMode = 'inputMode' in document.createElement('input');
+
+    if (supportsInputMode) {
+      if (billInputRef.current) {
+        billInputRef.current.inputMode = 'decimal';
+      }
+      if (customTipInputRef.current) {
+        customTipInputRef.current.inputMode = 'decimal';
+      }
+      if (peopleInputRef.current) {
+        peopleInputRef.current.inputMode = 'numeric';
+      }
+    } else {
+      // Fallback for browsers that don't support inputMode
+      if (billInputRef.current) {
+        billInputRef.current.setAttribute('pattern', '[0-9]*');
+        billInputRef.current.setAttribute('type', 'text');
+      }
+      if (customTipInputRef.current) {
+        customTipInputRef.current.setAttribute('pattern', '[0-9]*');
+        customTipInputRef.current.setAttribute('type', 'text');
+      }
+      if (peopleInputRef.current) {
+        peopleInputRef.current.setAttribute('pattern', '[0-9]*');
+        peopleInputRef.current.setAttribute('type', 'text');
+      }
     }
   }, []);
 
@@ -104,6 +122,8 @@ const App: React.FC = () => {
                 ref={billInputRef}
                 id="bill-input"
                 type="text"
+                inputMode="decimal"
+                pattern="[0-9]*"
                 value={billAmount}
                 onChange={handleBillChange}
                 placeholder="0"
@@ -132,6 +152,8 @@ const App: React.FC = () => {
               <input
                 ref={customTipInputRef}
                 type="text"
+                inputMode="decimal"
+                pattern="[0-9]*"
                 value={customTip}
                 onChange={handleCustomTipChange}
                 placeholder="Custom"
@@ -150,6 +172,8 @@ const App: React.FC = () => {
                 ref={peopleInputRef}
                 id="people-input"
                 type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={numberOfPeople}
                 onChange={handlePeopleChange}
                 placeholder="1"
