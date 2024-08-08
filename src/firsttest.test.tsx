@@ -79,6 +79,22 @@ describe('Tip Calculator', () => {
     });
   });
 
+  describe('Calculations', () => {
+    it('calculates tip amount and total per person correctly', () => {
+      render(<App />);
+      const billInput = screen.getByLabelText('Bill') as HTMLInputElement;
+      const tipButton = screen.getByText('15%');
+      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
+
+      fireEvent.change(billInput, { target: { value: '100' } });
+      fireEvent.click(tipButton);
+      fireEvent.change(peopleInput, { target: { value: '2' } });
+
+      expect(screen.getByText('$7.50')).toBeInTheDocument(); // Tip amount per person
+      expect(screen.getByText('$57.50')).toBeInTheDocument(); // Total per person
+    });
+  });
+
   describe('Reset Functionality', () => {
     it('resets all inputs and calculations when reset button is clicked', () => {
       render(<App />);
@@ -87,26 +103,15 @@ describe('Tip Calculator', () => {
       const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
       const resetButton = screen.getByText('Reset');
 
-      // Set initial values
       fireEvent.change(billInput, { target: { value: '100' } });
       fireEvent.click(tipButton);
       fireEvent.change(peopleInput, { target: { value: '2' } });
-
-      // Perform reset
       fireEvent.click(resetButton);
 
-      // Check inputs are reset
       expect(billInput.value).toBe('');
       expect(peopleInput.value).toBe('');
-
-      // Check both amount displays are reset
-      const amountElements = screen.getAllByText(/^\$0\.00$/, { selector: '.amount' });
-      expect(amountElements).toHaveLength(2);
-      amountElements.forEach((element) => {
-        expect(element).toHaveTextContent('$0.00');
-      });
-
-      // Check that the tip button is no longer selected
+      expect(screen.getByText('Tip Amount').nextElementSibling).toHaveTextContent('$0.00');
+      expect(screen.getByText('Total').nextElementSibling).toHaveTextContent('$0.00');
       expect(tipButton).not.toHaveClass('selected');
     });
   });

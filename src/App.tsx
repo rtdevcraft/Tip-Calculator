@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import logo from './assets/images/logo.svg';
 import dollarSign from './assets/images/icon-dollar.svg';
 import personIcon from './assets/images/icon-person.svg';
@@ -13,9 +13,25 @@ const App: React.FC = () => {
   const [totalPerPerson, setTotalPerPerson] = useState<number>(0);
   const [isZeroPeople, setIsZeroPeople] = useState<boolean>(false);
 
+  const billInputRef = useRef<HTMLInputElement>(null);
+  const peopleInputRef = useRef<HTMLInputElement>(null);
+  const customTipInputRef = useRef<HTMLInputElement>(null); // Add this line
+
+  useEffect(() => {
+    if (billInputRef.current && 'inputMode' in billInputRef.current) {
+      billInputRef.current.inputMode = 'decimal';
+    }
+    if (peopleInputRef.current && 'inputMode' in peopleInputRef.current) {
+      peopleInputRef.current.inputMode = 'numeric';
+    }
+    if (customTipInputRef.current && 'inputMode' in customTipInputRef.current) {
+      customTipInputRef.current.inputMode = 'decimal';
+    }
+  }, []);
+
   const handleBillChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '' || /^\d+(\.\d*)?$/.test(value)) {
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
       setBillAmount(value);
     }
   };
@@ -27,7 +43,7 @@ const App: React.FC = () => {
 
   const handleCustomTipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '' || /^\d+(\.\d*)?$/.test(value)) {
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
       setCustomTip(value);
       setTipPercentage(parseFloat(value) || null);
     }
@@ -35,15 +51,9 @@ const App: React.FC = () => {
 
   const handlePeopleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '') {
-      setNumberOfPeople('');
-      setIsZeroPeople(false);
-    } else if (value === '0') {
-      setNumberOfPeople('0');
-      setIsZeroPeople(true);
-    } else if (/^[1-9]\d*$/.test(value)) {
+    if (value === '' || /^\d+$/.test(value)) {
       setNumberOfPeople(value);
-      setIsZeroPeople(false);
+      setIsZeroPeople(value === '0');
     }
   };
 
@@ -57,11 +67,11 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (billAmount && tipPercentage !== null && numberOfPeople && parseInt(numberOfPeople) > 0) {
-      const bill = parseFloat(billAmount);
-      const tip = tipPercentage;
-      const people = parseInt(numberOfPeople);
+    const bill = parseFloat(billAmount) || 0;
+    const tip = tipPercentage || 0;
+    const people = parseInt(numberOfPeople) || 1;
 
+    if (bill > 0 && people > 0) {
       const tipAmount = (bill * tip) / 100;
       const totalAmount = bill + tipAmount;
 
@@ -91,15 +101,13 @@ const App: React.FC = () => {
             </label>
             <div className="input-w-icon">
               <input
+                ref={billInputRef}
                 id="bill-input"
-                type="number"
-                inputMode="decimal"
+                type="text"
                 value={billAmount}
                 onChange={handleBillChange}
                 placeholder="0"
                 aria-describedby="bill-description"
-                step="0.01"
-                min="0"
               />
               <img src={dollarSign} alt="" className="input-icon" aria-hidden="true" />
             </div>
@@ -108,35 +116,30 @@ const App: React.FC = () => {
             </p>
           </div>
 
-          <fieldset className="tip-section">
-            <legend id="tip-label" className="input-label">
-              Select Tip %
-            </legend>
-            <div className="tip-buttons-container" role="group" aria-labelledby="tip-label">
+          <div className="tip-section">
+            <p className="input-label">Select Tip %</p>
+            <div className="tip-buttons-container">
               {[5, 10, 15, 25, 50].map((percentage) => (
                 <button
                   key={percentage}
                   type="button"
                   onClick={() => handleTipSelect(percentage)}
                   className={tipPercentage === percentage ? 'selected' : ''}
-                  aria-pressed={tipPercentage === percentage}
                 >
                   {percentage}%
                 </button>
               ))}
               <input
-                type="number"
-                inputMode="decimal"
+                ref={customTipInputRef}
+                type="text"
                 value={customTip}
                 onChange={handleCustomTipChange}
                 placeholder="Custom"
                 className={`custom-tip-input ${customTip ? 'active' : ''}`}
                 aria-label="Custom tip percentage"
-                step="0.1"
-                min="0"
               />
             </div>
-          </fieldset>
+          </div>
 
           <div className="input-wrapper">
             <label htmlFor="people-input" className="input-label">
@@ -144,15 +147,14 @@ const App: React.FC = () => {
             </label>
             <div className={`input-w-icon ${isZeroPeople ? 'error' : ''}`}>
               <input
+                ref={peopleInputRef}
                 id="people-input"
-                type="number"
-                inputMode="numeric"
+                type="text"
                 value={numberOfPeople}
                 onChange={handlePeopleChange}
                 placeholder="1"
                 aria-invalid={isZeroPeople}
                 aria-describedby={isZeroPeople ? 'people-error' : 'people-description'}
-                min="1"
               />
               <img src={personIcon} alt="" className="input-icon" aria-hidden="true" />
             </div>
