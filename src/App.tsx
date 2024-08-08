@@ -92,12 +92,14 @@ const App: React.FC = () => {
             <div className="input-w-icon">
               <input
                 id="bill-input"
-                type="text"
+                type="number"
                 inputMode="decimal"
                 value={billAmount}
                 onChange={handleBillChange}
                 placeholder="0"
                 aria-describedby="bill-description"
+                step="0.01"
+                min="0"
               />
               <img src={dollarSign} alt="" className="input-icon" aria-hidden="true" />
             </div>
@@ -123,13 +125,15 @@ const App: React.FC = () => {
                 </button>
               ))}
               <input
-                type="text"
+                type="number"
                 inputMode="decimal"
                 value={customTip}
                 onChange={handleCustomTipChange}
                 placeholder="Custom"
                 className={`custom-tip-input ${customTip ? 'active' : ''}`}
                 aria-label="Custom tip percentage"
+                step="0.1"
+                min="0"
               />
             </div>
           </fieldset>
@@ -141,13 +145,14 @@ const App: React.FC = () => {
             <div className={`input-w-icon ${isZeroPeople ? 'error' : ''}`}>
               <input
                 id="people-input"
-                type="text"
+                type="number"
                 inputMode="numeric"
                 value={numberOfPeople}
                 onChange={handlePeopleChange}
                 placeholder="1"
                 aria-invalid={isZeroPeople}
                 aria-describedby={isZeroPeople ? 'people-error' : 'people-description'}
+                min="1"
               />
               <img src={personIcon} alt="" className="input-icon" aria-hidden="true" />
             </div>
