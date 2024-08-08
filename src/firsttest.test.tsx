@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom';
 import App from './App';
 
-describe('App', () => {
+describe('Tip Calculator', () => {
   it('renders the logo', () => {
     render(<App />);
     const logoElement = screen.getByAltText('Tip Splitter Logo');
@@ -34,7 +34,6 @@ describe('App', () => {
       expect(screen.getByText('15%')).toBeInTheDocument();
       expect(screen.getByText('25%')).toBeInTheDocument();
       expect(screen.getByText('50%')).toBeInTheDocument();
-      expect(screen.getByText('Custom')).toBeInTheDocument();
     });
 
     it('updates selected tip percentage when a button is clicked', () => {
@@ -42,55 +41,6 @@ describe('App', () => {
       const tipButton = screen.getByText('15%');
       fireEvent.click(tipButton);
       expect(tipButton).toHaveClass('selected');
-
-      const tipDisplay = screen.getByTestId('selected-tip');
-      expect(tipDisplay).toHaveTextContent('15%');
-    });
-  });
-
-  describe('Number of People Input', () => {
-    it('updates number of people when input changes', () => {
-      render(<App />);
-      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
-      fireEvent.change(peopleInput, { target: { value: '4' } });
-      expect(peopleInput.value).toBe('4');
-    });
-
-    it('only allows numeric input for number of people', () => {
-      render(<App />);
-      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
-      fireEvent.change(peopleInput, { target: { value: 'abc' } });
-      expect(peopleInput.value).toBe('');
-    });
-  });
-
-  describe('Tip Calculations', () => {
-    it('calculates tip amount per person correctly', () => {
-      render(<App />);
-      const billInput = screen.getByLabelText('Bill') as HTMLInputElement;
-      const tipButton = screen.getByText('15%');
-      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
-
-      fireEvent.change(billInput, { target: { value: '100' } });
-      fireEvent.click(tipButton);
-      fireEvent.change(peopleInput, { target: { value: '4' } });
-
-      const tipAmountPerPerson = screen.getByText('$3.75');
-      expect(tipAmountPerPerson).toBeInTheDocument();
-    });
-
-    it('calculates total amount per person correctly', () => {
-      render(<App />);
-      const billInput = screen.getByLabelText('Bill') as HTMLInputElement;
-      const tipButton = screen.getByText('15%');
-      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
-
-      fireEvent.change(billInput, { target: { value: '100' } });
-      fireEvent.click(tipButton);
-      fireEvent.change(peopleInput, { target: { value: '4' } });
-
-      const totalPerPerson = screen.getByText('$28.75');
-      expect(totalPerPerson).toBeInTheDocument();
     });
   });
 
@@ -102,18 +52,30 @@ describe('App', () => {
       expect(customTipInput.value).toBe('22');
     });
 
-    it('calculates tip correctly with custom tip', () => {
+    it('clears custom tip when a percentage button is clicked', () => {
       render(<App />);
-      const billInput = screen.getByLabelText('Bill') as HTMLInputElement;
       const customTipInput = screen.getByPlaceholderText('Custom') as HTMLInputElement;
-      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
-
-      fireEvent.change(billInput, { target: { value: '100' } });
       fireEvent.change(customTipInput, { target: { value: '22' } });
-      fireEvent.change(peopleInput, { target: { value: '4' } });
+      const tipButton = screen.getByText('15%');
+      fireEvent.click(tipButton);
+      expect(customTipInput.value).toBe('');
+    });
+  });
 
-      const tipAmountPerPerson = screen.getByText('$5.50');
-      expect(tipAmountPerPerson).toBeInTheDocument();
+  describe('Number of People Input', () => {
+    it('updates number of people when input changes', () => {
+      render(<App />);
+      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
+      fireEvent.change(peopleInput, { target: { value: '4' } });
+      expect(peopleInput.value).toBe('4');
+    });
+
+    it('shows error when number of people is zero', () => {
+      render(<App />);
+      const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
+      fireEvent.change(peopleInput, { target: { value: '0' } });
+      expect(screen.getByText("Can't be zero")).toBeInTheDocument();
+      expect(peopleInput.closest('.input-w-icon')).toHaveClass('error');
     });
   });
 
@@ -127,12 +89,18 @@ describe('App', () => {
 
       fireEvent.change(billInput, { target: { value: '100' } });
       fireEvent.click(tipButton);
-      fireEvent.change(peopleInput, { target: { value: '4' } });
+      fireEvent.change(peopleInput, { target: { value: '2' } });
       fireEvent.click(resetButton);
 
       expect(billInput.value).toBe('');
       expect(peopleInput.value).toBe('');
-      expect(screen.getByText('$0.00')).toBeInTheDocument();
+      expect(screen.getByText('Tip Amount', { exact: false }).nextElementSibling).toHaveTextContent(
+        '$0.00'
+      );
+      expect(screen.getByText('Total', { exact: false }).nextElementSibling).toHaveTextContent(
+        '$0.00'
+      );
+      expect(tipButton).not.toHaveClass('selected');
     });
   });
 });

@@ -57,19 +57,24 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const bill = parseFloat(billAmount) || 0;
-    const tip = tipPercentage || 0;
-    const people = parseInt(numberOfPeople) || 1;
+    if (billAmount && tipPercentage !== null && numberOfPeople && parseInt(numberOfPeople) > 0) {
+      const bill = parseFloat(billAmount);
+      const tip = tipPercentage;
+      const people = parseInt(numberOfPeople);
 
-    const tipAmount = (bill * tip) / 100;
-    const totalAmount = bill + tipAmount;
+      const tipAmount = (bill * tip) / 100;
+      const totalAmount = bill + tipAmount;
 
-    setTipPerPerson(tipAmount / people);
-    setTotalPerPerson(totalAmount / people);
+      setTipPerPerson(tipAmount / people);
+      setTotalPerPerson(totalAmount / people);
+    } else {
+      setTipPerPerson(0);
+      setTotalPerPerson(0);
+    }
   }, [billAmount, tipPercentage, numberOfPeople]);
 
   const displayAmount = (amount: number): string => {
-    return isZeroPeople || numberOfPeople === '' ? '0.00' : amount.toFixed(2);
+    return amount.toFixed(2);
   };
 
   return (
@@ -79,29 +84,37 @@ const App: React.FC = () => {
         <img src={logo} alt="Tip Splitter Logo" />
       </header>
       <main>
-        <div className="inputs-container">
+        <form className="inputs-container" onSubmit={(e) => e.preventDefault()}>
           <div className="input-wrapper">
-            <label htmlFor="bill-input">
-              <h2>Bill</h2>
+            <label htmlFor="bill-input" className="input-label">
+              Bill
             </label>
             <div className="input-w-icon">
               <input
                 id="bill-input"
                 type="text"
+                inputMode="decimal"
                 value={billAmount}
                 onChange={handleBillChange}
                 placeholder="0"
+                aria-describedby="bill-description"
               />
               <img src={dollarSign} alt="" className="input-icon" aria-hidden="true" />
             </div>
+            <p id="bill-description" className="visually-hidden">
+              Enter the total bill amount
+            </p>
           </div>
 
-          <div className="tip-section">
-            <h2 id="tip-label">Select Tip %</h2>
+          <fieldset className="tip-section">
+            <legend id="tip-label" className="input-label">
+              Select Tip %
+            </legend>
             <div className="tip-buttons-container" role="group" aria-labelledby="tip-label">
               {[5, 10, 15, 25, 50].map((percentage) => (
                 <button
                   key={percentage}
+                  type="button"
                   onClick={() => handleTipSelect(percentage)}
                   className={tipPercentage === percentage ? 'selected' : ''}
                   aria-pressed={tipPercentage === percentage}
@@ -111,6 +124,7 @@ const App: React.FC = () => {
               ))}
               <input
                 type="text"
+                inputMode="decimal"
                 value={customTip}
                 onChange={handleCustomTipChange}
                 placeholder="Custom"
@@ -118,48 +132,56 @@ const App: React.FC = () => {
                 aria-label="Custom tip percentage"
               />
             </div>
-          </div>
+          </fieldset>
+
           <div className="input-wrapper">
-            <div className="label-wrapper">
-              <label htmlFor="people-input">
-                <h2>Number of People</h2>
-              </label>
-              {isZeroPeople && (
-                <span className="error-message" id="people-error">
-                  Can't be zero
-                </span>
-              )}
-            </div>
+            <label htmlFor="people-input" className="input-label">
+              Number of People
+            </label>
             <div className={`input-w-icon ${isZeroPeople ? 'error' : ''}`}>
               <input
                 id="people-input"
                 type="text"
+                inputMode="numeric"
                 value={numberOfPeople}
                 onChange={handlePeopleChange}
                 placeholder="1"
                 aria-invalid={isZeroPeople}
-                aria-describedby={isZeroPeople ? 'people-error' : undefined}
+                aria-describedby={isZeroPeople ? 'people-error' : 'people-description'}
               />
               <img src={personIcon} alt="" className="input-icon" aria-hidden="true" />
             </div>
+            {isZeroPeople && (
+              <p id="people-error" className="error-message">
+                Can't be zero
+              </p>
+            )}
+            <p id="people-description" className="visually-hidden">
+              Enter the number of people splitting the bill
+            </p>
           </div>
-        </div>
-        <div className="outputs-container">
-          <div className="output">
-            <h2>
-              Tip Amount <span className="per-person">/ person</span>
-            </h2>
-            <p className="amount">${displayAmount(tipPerPerson)}</p>
+        </form>
+
+        <div className="outputs-container" aria-live="polite">
+          <div className="outputs">
+            <div className="output">
+              <h2>
+                Tip Amount <span className="per-person">/ person</span>
+              </h2>
+              <p className="amount">${displayAmount(tipPerPerson)}</p>
+            </div>
+            <div className="output">
+              <h2>
+                Total <span className="per-person">/ person</span>
+              </h2>
+              <p className="amount">${displayAmount(totalPerPerson)}</p>
+            </div>
           </div>
-          <div className="output">
-            <h2>
-              Total <span className="per-person">/ person</span>
-            </h2>
-            <p className="amount">${displayAmount(totalPerPerson)}</p>
+          <div className="reset-button">
+            <button className="reset" onClick={handleReset} type="button">
+              Reset
+            </button>
           </div>
-          <button className="reset" onClick={handleReset}>
-            Reset
-          </button>
         </div>
       </main>
     </div>
