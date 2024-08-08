@@ -87,19 +87,26 @@ describe('Tip Calculator', () => {
       const peopleInput = screen.getByLabelText('Number of People') as HTMLInputElement;
       const resetButton = screen.getByText('Reset');
 
+      // Set initial values
       fireEvent.change(billInput, { target: { value: '100' } });
       fireEvent.click(tipButton);
       fireEvent.change(peopleInput, { target: { value: '2' } });
+
+      // Perform reset
       fireEvent.click(resetButton);
 
+      // Check inputs are reset
       expect(billInput.value).toBe('');
       expect(peopleInput.value).toBe('');
-      expect(screen.getByText('Tip Amount', { exact: false }).nextElementSibling).toHaveTextContent(
-        '$0.00'
-      );
-      expect(screen.getByText('Total', { exact: false }).nextElementSibling).toHaveTextContent(
-        '$0.00'
-      );
+
+      // Check both amount displays are reset
+      const amountElements = screen.getAllByText(/^\$0\.00$/, { selector: '.amount' });
+      expect(amountElements).toHaveLength(2);
+      amountElements.forEach((element) => {
+        expect(element).toHaveTextContent('$0.00');
+      });
+
+      // Check that the tip button is no longer selected
       expect(tipButton).not.toHaveClass('selected');
     });
   });

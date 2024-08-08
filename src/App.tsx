@@ -173,13 +173,17 @@ const App: React.FC = () => {
               <h2>
                 Tip Amount <span className="per-person">/ person</span>
               </h2>
-              <p className="amount">${displayAmount(tipPerPerson)}</p>
+              <p className="amount" data-testid="tip-amount">
+                ${displayAmount(tipPerPerson)}
+              </p>
             </div>
             <div className="output">
               <h2>
                 Total <span className="per-person">/ person</span>
               </h2>
-              <p className="amount">${displayAmount(totalPerPerson)}</p>
+              <p className="amount" data-testid="total-amount">
+                ${displayAmount(totalPerPerson)}
+              </p>
             </div>
           </div>
           <div className="reset-button">
